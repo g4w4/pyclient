@@ -1,21 +1,21 @@
 from socketIO_client_nexus import SocketIO, LoggingNamespace
-#from config import infoClient
+from config import token
 import os, sys, time, json
 from webwhatsapi import WhatsAPIDriver
 from webwhatsapi.objects.message import Message, MediaMessage
 import shutil
 
 
-socketIO = SocketIO("192.168.0.15",3000, LoggingNamespace)
-wsp = { 'status':'discconect','chats':None } 
+socketIO = SocketIO("192.168.40.15",3000, LoggingNamespace)
+wsp = { 'status':'desactiva','chats':None, 'token': token } 
 
 def on_connect():
     print('connect')
-    socketIO.emit("statusAcount",wsp)
+    socketIO.emit("addAccount",wsp)
 
 def on_reconnect():
     print('reconnect')
-    socketIO.emit("statusAcount",wsp)
+    socketIO.emit("addAccount",wsp)
 
 def on_welcome():
     print('Sesion completada')
