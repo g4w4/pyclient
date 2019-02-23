@@ -63,7 +63,7 @@ def on_waitLogin():
     global awaitLogin, driver,wsp
     if awaitLogin == None:
         awaitLogin = True
-        driver.wait_for_login()
+        driver.wait_for_login(300)
         wsp['status'] = 'active'
         socketIO.emit('updateAcount',wsp)
         write_log('Socket-Info','session start')
