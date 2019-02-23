@@ -46,17 +46,17 @@ def on_getQr(*args):
     if driver == None:
         driver = WhatsAPIDriver(profile=profiledir, client='remote', command_executor=selemiunIP)
     if driver.is_logged_in():
-             write_log('Socket-Info','session started')
-             socketIO.emit('sendQr',{'idSend':args[0],'status':'Session okay'})
-        else:
-            write_log('Socket-Info','go to qr')
-            name = uuid4().hex+'.png'
-            if os.path.exists(name): os.remove(name)
-            driver.get_qr(name)
-            write_log('Socket-Info','saving qr')
-            os.rename('./'+name,pathSource+name)
-            socketIO.emit('sendQr',{'idSend':args[0],'file':str(pathSource+name)})
-            on_waitLogin()
+        write_log('Socket-Info','session started')
+        socketIO.emit('sendQr',{'idSend':args[0],'status':'Session okay'})
+    else:
+        write_log('Socket-Info','go to qr')
+        name = uuid4().hex+'.png'
+        if os.path.exists(name): os.remove(name)
+        driver.get_qr(name)
+        write_log('Socket-Info','saving qr')
+        os.rename('./'+name,pathSource+name)
+        socketIO.emit('sendQr',{'idSend':args[0],'file':str(pathSource+name)})
+        on_waitLogin()
 
 
 def on_waitLogin():
