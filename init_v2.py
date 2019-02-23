@@ -2,6 +2,7 @@ from socketIO_client_nexus import SocketIO, LoggingNamespace
 from config import token,ip,pathSource,selemiunIP
 from Utils.logs import write_log
 import os, sys, time, json
+import shutil
 from webwhatsapi import WhatsAPIDriver
 from webwhatsapi.objects.message import Message, MediaMessage
 import shutil
@@ -54,7 +55,7 @@ def on_getQr(*args):
         if os.path.exists(name): os.remove(name)
         driver.get_qr(name)
         write_log('Socket-Info','saving qr')
-        os.rename('./'+name,pathSource+name)
+        shutil.move('./'+name,pathSource+name)
         socketIO.emit('sendQr',{'idSend':args[0],'file':str(pathSource+name)})
         on_waitLogin()
 
@@ -78,7 +79,7 @@ def on_screenShot(*args):
         if os.path.exists(name): os.remove(name)
         driver.screenshot(name)
         write_log('Socket-Info','saving screen')
-        os.rename('./'+name,pathSource+name)
+        shutil.move('./'+name,pathSource+name)
         socketIO.emit('sendScreen',{'idSend':args[0],'file':str(pathSource+name)})
     else :
         socketIO.emit('sendScreen',{'idSend':args[0],'status':'Error in connection'})    
