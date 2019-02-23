@@ -45,8 +45,7 @@ def on_getQr(*args):
     global driver
     if driver == None:
         driver = WhatsAPIDriver(profile=profiledir, client='remote', command_executor=selemiunIP)
-    try:
-        if driver.is_logged_in():
+    if driver.is_logged_in():
              write_log('Socket-Info','session started')
              socketIO.emit('sendQr',{'idSend':args[0],'status':'Session okay'})
         else:
@@ -58,8 +57,6 @@ def on_getQr(*args):
             os.rename('./'+name,pathSource+name)
             socketIO.emit('sendQr',{'idSend':args[0],'file':str(pathSource+name)})
             on_waitLogin()
-    except:
-        socketIO.emit('sendQr',{'idSend':args[0],'status':'Error in connection'})
 
 
 def on_waitLogin():

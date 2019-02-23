@@ -18,3 +18,7 @@ docker run --network wsp_1 -dti -e SELENIUM='http://172.18.0.2:4444/wd/hub' -v /
 
 docker run --network wsp_1  -p 4000:4000 -dti --name node_help -v /usr/local/services/demo_wsp:/app --name node_demo node
 
+docker run -d --name bw_prueba --network cuenta_prueba  firefox
+
+
+docker run --network cuenta_prueba -dti -e SELENIUM='http://bw_prueba:4444/wd/hub' -v /usr/local/services/helpDesk/cuenta_prueba:/app -v /usr/local/services/helpDesk/files:/app --name py_prueba gamaz00001/socketpython
