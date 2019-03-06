@@ -1377,7 +1377,8 @@ window.WAPI.getChatsWhitMessagesNotRead = function (done) {
     var tmp_chat = []
     
     if(window.Store.Chat.models && window.Store.Chat.models.length > 0){
-        for (chat in window.Store.Chat.models){
+        for( let x = 0; x < window.Store.Chat.models.length ;x ++){
+            chat = x;
             if(window.Store.Chat.models[chat] && window.Store.Chat.models[chat].__x_hasUnread && !window.Store.Chat.models[chat].isGroup){
                 tmp = window.Store.Chat.models[chat].__x_unreadCount;
                 id = window.Store.Chat.models[chat].id._serialized
