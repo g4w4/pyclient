@@ -1374,26 +1374,32 @@ window.WAPI.getPhoneNumber = function (done) {
 
 window.WAPI.getChatsWhitMessagesNotRead = function (done) {
    try {
-    var tmp_chat = [] 
-    for (chat in window.Store.Chat.models){
-        if(window.Store.Chat.models[chat].__x_hasUnread && !window.Store.Chat.models[chat].isGroup){
-            tmp = window.Store.Chat.models[chat].__x_unreadCount;
-            id = window.Store.Chat.models[chat].id._serialized
-            chat_tmp = []
-            for(let i = (window.Store.Chat.models[chat].msgs._models.length - 1); i >= (window.Store.Chat.models[chat].msgs._models.length - tmp); i--){
-                
-                if(window.Store.Chat.models[chat].msgs._models[i].type)
-                    chat_tmp.push(window.Store.Chat.models[chat].msgs._models[i].__x_body)
-                
+    var tmp_chat = []
+    
+    if(window.Store.Chat.models && window.Store.Chat.models.length > 0){
+        for (chat in window.Store.Chat.models){
+            if(window.Store.Chat.models[chat] && window.Store.Chat.models[chat].__x_hasUnread && !window.Store.Chat.models[chat].isGroup){
+                tmp = window.Store.Chat.models[chat].__x_unreadCount;
+                id = window.Store.Chat.models[chat].id._serialized
+                chat_tmp = []
+                if(window.Store.Chat.models[chat].msgs && window.Store.Chat.models[chat].msgs._models){
+                    for(let i = (window.Store.Chat.models[chat].msgs._models.length - 1); i >= (window.Store.Chat.models[chat].msgs._models.length - tmp); i--){
+                    
+                        if(window.Store.Chat.models[chat].msgs._models[i].type)
+                            chat_tmp.push(window.Store.Chat.models[chat].msgs._models[i].__x_body)
+                        
+                    }
+        
+                    chat_tmp_tmp = []
+        
+                    for(let i = (chat_tmp.length - 1); i >= 0; i--){ chat_tmp_tmp.push(chat_tmp[i]) }
+        
+                   tmp_chat.push([id,chat_tmp_tmp])
+                }
             }
-
-            chat_tmp_tmp = []
-
-            for(let i = (chat_tmp.length - 1); i >= 0; i--){ chat_tmp_tmp.push(chat_tmp[i]) }
-
-           tmp_chat.push([id,chat_tmp_tmp])
         }
     }
+    
 
     if (done !== undefined) {
         done(tmp_chat);
@@ -1401,7 +1407,12 @@ window.WAPI.getChatsWhitMessagesNotRead = function (done) {
 
     return tmp_chat;
    } catch (error) {
-       return []
+
+    if (done !== undefined) {
+        done([]);
+    }
+    return []
+       
    }
 };
 
