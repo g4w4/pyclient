@@ -754,3 +754,14 @@ class WhatsAPIDriver(object):
 
     def demote_participant_admin_group(self, idGroup, idParticipant):
         return self.wapi_functions.demoteParticipantAdminGroup(idGroup,idParticipant)
+
+    # New functions #
+    def get_phone_number(self):
+        return self.wapi_functions.getPhoneNumber()
+
+
+    def get_chats_whit_messages_not_read(self):
+        return self.wapi_functions.getChatsWhitMessagesNotRead()
+
+    def mark_read(self,idChat):
+        return self.wapi_functions.getChatsWhitMessagesNotRead()

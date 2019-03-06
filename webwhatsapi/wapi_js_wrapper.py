@@ -154,10 +154,15 @@ class NewMessagesObservable(Thread):
                 if isinstance(new_js_messages, (collections.Sequence, np.ndarray)) and len(new_js_messages) > 0:
                     new_messages = []
                     for js_message in new_js_messages:
-                        new_messages.append(factory_message(js_message, self.wapi_driver))
+                        if js_message.get('chat').get('isGroup'):
+                            print("Mensaje de grupo")
+                            #self.wapi_js_wrapper.leaveGroup(js_message.get('chat').get('id')) # Se sale de grupos 
+                        else:
+                            new_messages.append(factory_message(js_message, self.wapi_driver))
 
                     self._inform_all(new_messages)
             except Exception as e:
+                print(e)
                 pass
 
             time.sleep(2)

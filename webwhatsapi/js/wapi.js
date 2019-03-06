@@ -1333,7 +1333,7 @@ window.WAPI.promoteParticipantAdminGroup = function(idGroup, idParticipant, done
     
 }
 
-
+ 
 /**
  * Demote Admin of Group
  * @param {*} idGroup '0000000000-00000000@g.us'
@@ -1360,3 +1360,67 @@ window.WAPI.demoteParticipantAdminGroup = function(idGroup, idParticipant, done)
     })
     
 }
+
+
+/* My functions */
+
+window.WAPI.getPhoneNumber = function (done) {
+    phone = (window.Store.Conn.__x_me && window.Store.Conn.__x_me._serialized) ? window.Store.Conn.__x_me._serialized : "no found" 
+    if (done !== undefined) {
+        done(phone);
+    }
+    return phone;
+};
+
+window.WAPI.getChatsWhitMessagesNotRead = function (done) {
+   try {
+    var tmp_chat = [] 
+    for (chat in window.Store.Chat.models){
+        if(window.Store.Chat.models[chat].__x_hasUnread && !window.Store.Chat.models[chat].isGroup){
+            tmp = window.Store.Chat.models[chat].__x_unreadCount;
+            id = window.Store.Chat.models[chat].id._serialized
+            chat_tmp = []
+            for(let i = (window.Store.Chat.models[chat].msgs._models.length - 1); i >= (window.Store.Chat.models[chat].msgs._models.length - tmp); i--){
+                
+                if(window.Store.Chat.models[chat].msgs._models[i].type)
+                    chat_tmp.push(window.Store.Chat.models[chat].msgs._models[i].__x_body)
+                
+            }
+
+            chat_tmp_tmp = []
+
+            for(let i = (chat_tmp.length - 1); i >= 0; i--){ chat_tmp_tmp.push(chat_tmp[i]) }
+
+           tmp_chat.push([id,chat_tmp_tmp])
+        }
+    }
+
+    if (done !== undefined) {
+        done(tmp_chat);
+    }
+
+    return tmp_chat;
+   } catch (error) {
+       return []
+   }
+};
+
+
+window.WAPI.markRead = function (idChat,done) {
+
+    for (chat in window.Store.Chat.models){
+        if(window.Store.Chat.models[chat].id._serialized == idChat){
+            window.Store.Chat.models[chat].markSeen()
+            break;
+        }  
+    }
+
+    if (done !== undefined) {
+        done(true);
+    }
+
+    return true;
+};
+
+
+

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from socketIO_client_nexus import SocketIO, LoggingNamespace
 from config import token,ip,pathSource,selemiunIP
 from Utils.logs import write_log
@@ -64,11 +65,14 @@ def on_waitLogin():
     global awaitLogin, driver,wsp
     if awaitLogin == None:
         awaitLogin = True
-        driver.wait_for_login(300)
+        driver.wait_for_login()
         wsp['status'] = 'active'
+        wsp['numero'] = str(driver.get_phone_number())
         socketIO.emit('updateAcount',wsp)
         write_log('Socket-Info','session start')
         driver.subscribe_new_messages(NewMessageObserver())
+        on_sendStatus()
+        on_messagesOld()
 
 
 def on_screenShot(*args):
@@ -90,8 +94,10 @@ def on_updateInfo(*args):
     print('updateInfo')
     wsp = args[0]
 
+
 def on_closeSession():
     global awaitLogin, driver,wsp
+    driver.unsubscribe_new_messages(NewMessageObserver())
     driver.close()
     awaitLogin = None
     driver = None
@@ -100,14 +106,48 @@ def on_closeSession():
     write_log('Socket-Info','session close')
 
 
+
+def on_sendText():
+    driver.send_message_to_id("5215569388165@c.us","hola es una prueba")
+
+
+def on_sendStatus():
+    time.sleep(5)
+    if driver != None:
+        socketIO.emit('sendStatus',{'batery':str(driver.get_battery_level()),'status':str(driver.get_status()),'phone':str(driver.get_phone_number())})
+
+
+def on_messagesOld():
+    time.sleep(10)
+    for chat in driver.get_chats_whit_messages_not_read():
+        for message in chat[1]:
+            time.sleep(.5)
+            socketIO.emit('newMessage',{'chat':chat[0],'message':message})
+
+
 class NewMessageObserver:
     def on_message_received(self, new_messages):
         for message in new_messages:
             if message.type == 'chat':
-                write_log('Socket-Info',"New message '{}' received from number {}".format(message.content, message.sender.id))
+                write_log('Socket-Info',"New message '{}' received from number {}".format(message.type, message.sender.id))
                 socketIO.emit('newMessage',{'chat':message.sender.id,'message':message.content})
             else:
                 write_log('Socket-Info',"New message of type '{}' received from number {}".format(message.type, message.sender.id))
+                if message.type == 'image':
+                    content =  str(message.save_media(pathSource,True))
+                    socketIO.emit('newMessage',{'chat':message.sender.id,'message':content,'type':'img','caption':message.caption})
+                elif message.type == 'video':
+                    content =  str(message.save_media(pathSource,True))
+                    socketIO.emit('newMessage',{'chat':message.sender.id,'message':content,'type':'video','caption':message.caption})
+                elif message.type == 'document':
+                    content =  str(message.save_media(pathSource,True))
+                    socketIO.emit('newMessage',{'chat':message.sender.id,'message':content,'type':'file','caption':message.caption})
+                elif message.type == 'audio' or message.type == 'ptt':
+                    content =  str(message.save_media(pathSource,True))
+                    os.rename(pathSource+content, pathSource+content+'.ogg')
+                    socketIO.emit('newMessage',{'chat':message.sender.id,'message':content+'.ogg','type':'ogg','caption':message.caption})
+                else:
+                    socketIO.emit('newMessage',{'chat':message.sender.id,'message':'Contenido No soportado'})
 
 
 ##### SOCKET CREDENTIALS #####
@@ -123,5 +163,7 @@ socketIO.on('getQr',on_getQr)
 socketIO.on('getScreenShot',on_screenShot)
 socketIO.on('updateInfo',on_updateInfo)
 socketIO.on('closeSession',on_closeSession)
+socketIO.on('sendText',on_sendText)
+socketIO.on('getStatus',on_sendStatus)
 
 socketIO.wait()

@@ -62,7 +62,9 @@ class Message(WhatsappObject):
 
         if js_obj["content"]:
             self.content = js_obj["content"]
+            #self.content = "Aqui esta la falla"
             self.safe_content = safe_str(self.content[0:25]) + '...'
+            #self.safe_content = '...'
         elif self.type == 'revoked':
             self.content = ''
             self.safe_content = '...'
