@@ -149,7 +149,7 @@ class NewMessageObserver:
                     socketIO.emit('newMessage',{'chat':message.sender.id,'message':content,'type':'file','caption':message.caption})
                 elif message.type == 'audio' or message.type == 'ptt':
                     content =  str(message.save_media(pathSource,True))
-                    os.rename(pathSource+content, pathSource+content+'.ogg')
+                    os.rename(content, content+'.ogg')
                     socketIO.emit('newMessage',{'chat':message.sender.id,'message':content+'.ogg','type':'ogg','caption':message.caption})
                 else:
                     socketIO.emit('newMessage',{'chat':message.sender.id,'message':'Contenido No soportado'})
