@@ -70,9 +70,12 @@ def on_waitLogin():
         wsp['numero'] = str(driver.get_phone_number())
         socketIO.emit('updateAcount',wsp)
         write_log('Socket-Info','session start')
-        driver.subscribe_new_messages(NewMessageObserver())
         on_sendStatus()
+        write_log('Socket-Info','session recovery')
         on_messagesOld()
+        write_log('Socket-Info','session subscribe')
+        driver.subscribe_new_messages(NewMessageObserver())
+        
 
 
 def on_screenShot(*args):
@@ -119,7 +122,9 @@ def on_sendStatus():
 
 def on_messagesOld():
     time.sleep(10)
+    write_log('Socket-Info','session despertar')
     for chat in driver.get_chats_whit_messages_not_read():
+        write_log('Socket-Info','session iterar')
         for message in chat[1]:
             time.sleep(.5)
             socketIO.emit('newMessage',{'chat':chat[0],'message':message})
