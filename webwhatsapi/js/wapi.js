@@ -179,9 +179,14 @@ window.WAPI.createGroup = function (name, contactsId) {
 };
 
 window.WAPI.leaveGroup = function(groupId) {
-    groupId = typeof groupId == "string" ? groupId : groupId._serialized;
-    var group = window.Store.Chat.get(groupId);
-    return group.sendExit()
+   try{
+        groupId = typeof groupId == "string" ? groupId : groupId._serialized;
+        var group = window.Store.Chat.get(groupId);
+        group.sendExit()
+        return 'success'
+   }catch( error ){
+        return e.message
+   }
 };
 
 
@@ -1380,23 +1385,9 @@ window.WAPI.getChatsWhitMessagesNotRead = function (done) {
         for( let x = 0; x < window.Store.Chat.models.length ;x ++){
             chat = x;
             if(window.Store.Chat.models[chat] && window.Store.Chat.models[chat].__x_hasUnread && !window.Store.Chat.models[chat].isGroup){
-                tmp = window.Store.Chat.models[chat].__x_unreadCount;
+                unread = window.Store.Chat.models[chat].__x_unreadCount;
                 id = window.Store.Chat.models[chat].id._serialized
-                chat_tmp = []
-                if(window.Store.Chat.models[chat].msgs && window.Store.Chat.models[chat].msgs._models){
-                    for(let i = (window.Store.Chat.models[chat].msgs._models.length - 1); i >= (window.Store.Chat.models[chat].msgs._models.length - tmp); i--){
-                    
-                        if(window.Store.Chat.models[chat].msgs._models[i].type)
-                            chat_tmp.push(window.Store.Chat.models[chat].msgs._models[i].__x_body)
-                        
-                    }
-        
-                    chat_tmp_tmp = []
-        
-                    for(let i = (chat_tmp.length - 1); i >= 0; i--){ chat_tmp_tmp.push(chat_tmp[i]) }
-        
-                   tmp_chat.push([id,chat_tmp_tmp])
-                }
+                tmp_chat.push( {id:id,unread:unread})
             }
         }
     }
@@ -1412,7 +1403,7 @@ window.WAPI.getChatsWhitMessagesNotRead = function (done) {
     if (done !== undefined) {
         done([]);
     }
-    return []
+    return [error.message]
        
    }
 };

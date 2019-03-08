@@ -156,7 +156,9 @@ class NewMessagesObservable(Thread):
                     for js_message in new_js_messages:
                         if js_message.get('chat').get('isGroup'):
                             print("Mensaje de grupo")
-                            #self.wapi_js_wrapper.leaveGroup(js_message.get('chat').get('id')) # Se sale de grupos 
+                            #print(type(js_message.get('chat').get('id')))
+                            print(js_message.get('chat').get('id').get('_serialized'))
+                            #self.wapi_driver.leave_group(js_message.get('chat').get('id').get('_serialized')) # Se sale de grupos 
                         else:
                             new_messages.append(factory_message(js_message, self.wapi_driver))
 

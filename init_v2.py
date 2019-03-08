@@ -77,7 +77,6 @@ def on_waitLogin():
         driver.subscribe_new_messages(NewMessageObserver())
         
 
-
 def on_screenShot(*args):
     global driver
     if driver != None:
@@ -100,14 +99,13 @@ def on_updateInfo(*args):
 
 def on_closeSession():
     global awaitLogin, driver,wsp
-    driver.unsubscribe_new_messages(NewMessageObserver())
+    #driver.unsubscribe_new_messages(NewMessageObserver())
     driver.close()
     awaitLogin = None
     driver = None
     wsp['status'] = 'desactiva'
     socketIO.emit('updateAcount',wsp)
     write_log('Socket-Info','session close')
-
 
 
 def on_sendText():
@@ -121,14 +119,42 @@ def on_sendStatus():
 
 
 def on_messagesOld():
-    time.sleep(10)
     write_log('Socket-Info','session despertar')
     for chat in driver.get_chats_whit_messages_not_read():
-        write_log('Socket-Info','session iterar')
-        for message in chat[1]:
-            time.sleep(.5)
-            socketIO.emit('newMessage',{'chat':chat[0],'message':message})
+        if chat.get('isGroup'):
+            write_log('Socket-Info','Grupo eliminado '+chat.get('id'))
+            driver.leave_group(chat.get('id'))
+        else:
+            driver.chat_load_earlier_messages(chat.get('id'))
+            for message in driver.get_all_messages_in_chat(chat.get('id'),True):
+                time.sleep(.5)
+                on_messageOld(message)
 
+
+def on_messageOld(message):
+    sendByMy = True if driver.get_phone_number() == message.sender.id else False
+    chatId = message._js_obj.get('chat').get('id').get('_serialized')
+    if message.type == 'chat':
+        write_log('Socket-Info',"New message '{}' received from number {}".format(message.type, message.sender.id))
+        socketIO.emit('newMessage',{'chat':chatId,'message':message.content,'sendBy':sendByMy})
+    else:
+        write_log('Socket-Info',"New message of type '{}' received from number {}".format(message.type, message.sender.id))
+        if message.type == 'image':
+            content =  str(message.save_media(pathSource,True))
+            socketIO.emit('newMessage',{'chat':chatId,'message':content,'type':'img','caption':message.caption,'sendBy':sendByMy})
+        elif message.type == 'video':
+            content =  str(message.save_media(pathSource,True))
+            socketIO.emit('newMessage',{'chat':chatId,'message':content,'type':'video','caption':message.caption,'sendBy':sendByMy})
+        elif message.type == 'document':
+            content =  str(message.save_media(pathSource,True))
+            socketIO.emit('newMessage',{'chat':chatId,'message':content,'type':'file','caption':message.caption,'sendBy':sendByMy})
+        elif message.type == 'audio' or message.type == 'ptt':
+            content =  str(message.save_media(pathSource,True))
+            os.rename(content, content+'.ogg')
+            socketIO.emit('newMessage',{'chat':chatId,'message':content+'.ogg','type':'ogg','caption':message.caption,'sendBy':sendByMy})
+        else:
+            socketIO.emit('newMessage',{'chat':chatId,'message':'Contenido No soportado'})
+        
 
 class NewMessageObserver:
     def on_message_received(self, new_messages):
