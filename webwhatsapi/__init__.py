@@ -388,6 +388,7 @@ class WhatsAPIDriver(object):
     # get_unread_messages_in_chat()
 
     def get_all_messages_in_chat(self, chat, include_me=False, include_notifications=False):
+        idChat = chat if isinstance(chat,str) else chat.id
         """
         Fetches messages in chat
 
@@ -398,13 +399,15 @@ class WhatsAPIDriver(object):
         :return: List of messages in chat
         :rtype: list[Message]
         """
-        message_objs = self.wapi_functions.getAllMessagesInChat(chat.id, include_me, include_notifications)
+        message_objs = self.wapi_functions.getAllMessagesInChat(idChat, include_me, include_notifications)
 
         messages = []
         for message in message_objs:
             yield(factory_message(message, self))
 
     def get_all_message_ids_in_chat(self, chat, include_me=False, include_notifications=False):
+
+        idChat = chat if isinstance(chat,str) else chat.id
         """
         Fetches message ids in chat
 
@@ -415,7 +418,7 @@ class WhatsAPIDriver(object):
         :return: List of message ids in chat
         :rtype: list[str]
         """
-        return self.wapi_functions.getAllMessageIdsInChat(chat.id, include_me, include_notifications)
+        return self.wapi_functions.getAllMessageIdsInChat(idChat, include_me, include_notifications)
 
     def get_message_by_id(self, message_id):
         """
@@ -699,13 +702,18 @@ class WhatsAPIDriver(object):
         return self.wapi_functions.getBatteryLevel()
 
     def leave_group(self, chat_id):
-        """
-        Leave a group
+        try:
+            """
+            Leave a group
 
-        :param chat_id: id of group
-        :return:
-        """
-        return self.wapi_functions.leaveGroup(chat_id)
+            :param chat_id: id of group
+            :return:
+            """
+            self.wapi_functions.leaveGroup(chat_id)
+        except :
+           print("Error al salir de grupo")
+        finally:
+            return True
 
     def delete_chat(self, chat_id):
         """
@@ -765,3 +773,10 @@ class WhatsAPIDriver(object):
 
     def mark_read(self,idChat):
         return self.wapi_functions.getChatsWhitMessagesNotRead()
+
+    def exit_group(self,idGroup):
+        participant = self.get_phone_number()
+        print('Saliendo '+idGroup+' el '+participant)
+        result = self.wapi_functions.removeParticipantGroup(idGroup,participant)
+        print(result)
+        

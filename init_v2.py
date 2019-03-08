@@ -108,8 +108,11 @@ def on_closeSession():
     write_log('Socket-Info','session close')
 
 
-def on_sendText():
-    driver.send_message_to_id("5215569388165@c.us","hola es una prueba")
+def on_sendText(*args):
+    driver.send_message_to_id(args[1],args[0])
+    driver.mark_read(args[1])
+    if args[2] != 'test':
+        socketIO.emit('addMyMessage',{'chat':args[1],'message':args[0],'type':'chat','caption':''})
 
 
 def on_sendStatus():
