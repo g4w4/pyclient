@@ -8,6 +8,7 @@ from webwhatsapi import WhatsAPIDriver
 from webwhatsapi.objects.message import Message, MediaMessage
 import shutil
 from uuid import uuid4
+from threading import Thread
 
 ##### Setting for start ######
 if os.path.exists('./firefox_cache_v2'): shutil.rmtree('./firefox_cache_v2')
@@ -27,6 +28,8 @@ def on_connect(*args):
 def on_welcome(*args):
     global wsp
     write_log('Socket-Info','Connection success')
+    thread = Thread(target = loopStatus)
+    thread.start()
     if wsp != None:
         old_Wsp = args[0]
         old_Wsp['numero'] =  wsp['numero']
@@ -78,10 +81,21 @@ def on_waitLogin(*args):
         write_log('Socket-Info','session start')
         #driver.subscribe_new_messages(NewMessageObserver())
 
+
+def on_test(*args):
+    print("Consegui llegar")
+    print(args)
+
+def loopStatus():
+    while driver != None:
+        status = driver.
+        time.sleep(2)
+
 ##### SOCKET LISSENER #####
 socketIO.on('connect', on_connect)
 socketIO.on('welcome', on_welcome)
 socketIO.on('reconnect', on_reconnect)
 socketIO.on('getQr',on_getQr)
+socketIO.on('Test',on_test)
 
 socketIO.wait()
