@@ -294,6 +294,24 @@ def sendFile(id,caption,typeMessage,fileMessage):
         socketIO.emit('errorSendFile',{'chat':id,'message':caption,'sendBy':'Agent'})
         errorSend(traceback.format_exc())
 
+def on_deleteChat(*args):
+    try:
+        print(args[0])
+        write_log('Socket-Error','Delete Chat'+str(args[0]))
+        delChat = Thread(target=delete,args=(args[0],))
+        delChat.start()
+    except Exception as e:
+        write_log('Socket-Error',traceback.format_exc())
+        errorSend(traceback.format_exc())
+
+def delete(id):
+    try:
+        write_log('Socket-Error','Delete Chat'+str(id))
+        driver.delete_chat(str(id))
+    except Exception as e:
+        write_log('Socket-Error',traceback.format_exc())
+        errorSend(traceback.format_exc())
+
 
 #####################################
 #          Chat Functions           #
@@ -382,6 +400,7 @@ socketIO.on('matchUpdate',on_matchUpdate)
 socketIO.on('giveScreen',on_giveScreen)
 socketIO.on('sendText',on_sendText)
 socketIO.on('sendFile',on_sendFile)
+socketIO.on('deleteChat',on_deleteChat)
 
 socketIO.wait()
 

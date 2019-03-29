@@ -2,7 +2,7 @@
 
 docker network create wsp_1
 
-docker run -d --name <name> --network <network> -v <carpetaLoca>:/media --ip <ip> firefox
+docker run --network cuenta_prueba -dti -e SELENIUM='http://firefox:4444/wd/hub' -v /usr/local/services/helpDesk:/app --name py_prueba  py_client 
 
 docker run --network wsp_1 -dti -e SELENIUM='http://firefox:4444/wd/hub' -v /usr/local/services/wspapi/py_client:/app --name py_client  py_client 
 
