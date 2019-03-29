@@ -44,6 +44,13 @@ def on_welcome(*args):
             oldMessges = Thread(target=getOldMessages)
             oldMessges.start()
         else:
+
+            # Send inital data #
+            _wsp = {}
+            _wsp['whatsAppJoin'] = False
+            _wsp['accountDown'] = False
+            socketIO.emit('change',_wsp)
+
             driver = WhatsAPIDriver(profile=profiledir, client='remote', command_executor=selemiunIP)
             write_log('Socket-Info','Check if have cache')
             rember = Thread(target=rememberSession)
@@ -157,7 +164,6 @@ def loopStatus():
 # Get all chats not read in the account ONLY in start session #
 def getOldMessages():
     try:
-        time.sleep(10)
         chats = {}
         write_log('Socket-Info','Get oldMessage')
         for chat in driver.get_chats_whit_messages():
@@ -280,7 +286,6 @@ def sendFile(id,caption,typeMessage,fileMessage):
     try:
         write_log('Socket-Error','Sending File')
         driver.send_media(pathSource+fileMessage,id,caption)
-        driver.send_file()
         driver.mark_read(id)
         write_log('Socket-Error','Send File end')
         socketIO.emit('newMessage',{'chat':id,'message':fileMessage,'type':typeMessage,'caption':caption,'sendBy':'Agent'})
