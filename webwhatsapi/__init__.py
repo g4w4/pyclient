@@ -768,11 +768,11 @@ class WhatsAPIDriver(object):
         return self.wapi_functions.getPhoneNumber()
 
 
-    def get_chats_whit_messages_not_read(self):
-        return self.wapi_functions.getChatsWhitMessagesNotRead()
+    def get_chats_whit_messages(self):
+        return self.wapi_functions.getChatsWhitMessages()
 
     def mark_read(self,idChat):
-        return self.wapi_functions.getChatsWhitMessagesNotRead()
+        return self.wapi_functions.markRead(idChat)
 
     def exit_group(self,idGroup):
         participant = self.get_phone_number()
