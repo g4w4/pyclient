@@ -131,7 +131,7 @@ def on_waitLogin(*args):
             # Suscribe to observable #
             driver.subscribe_new_messages(NewMessageObserver())
 
-    except expression as identifier:
+    except Exception as e:
         write_log('Socket-Error',traceback.format_exc())
         errorSend(traceback.format_exc())
         awaitLogin = False
