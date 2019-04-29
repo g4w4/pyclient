@@ -176,7 +176,7 @@ def getOldMessages():
             print("CHAT NUEVO")
             if chat.get('isGroup') != True:
                 print("Es normal")
-                driver.chat_load_earlier_messages(chat.get('id'))
+                #driver.chat_load_earlier_messages(chat.get('id'))
                 chats[str(chat.get('id'))] = []
                 print("VA por mensages")
                 _messages = driver.get_all_messages_in_chat(chat.get('id'),True)
