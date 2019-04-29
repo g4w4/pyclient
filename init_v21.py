@@ -175,9 +175,14 @@ def getOldMessages():
         for chat in driver.get_chats_whit_messages():
             print("CHAT NUEVO")
             if chat.get('isGroup') != True:
+                print("Es normal")
                 driver.chat_load_earlier_messages(chat.get('id'))
                 chats[str(chat.get('id'))] = []
-                for message in driver.get_all_messages_in_chat(chat.get('id'),True):
+                print("VA por mensages")
+                _messages = driver.get_all_messages_in_chat(chat.get('id'),True)
+                print("SALIO ESTO")
+                print(_messages)
+                for message in _messages:
                     chatId = message._js_obj.get('chat').get('id').get('_serialized')
                     sendByMy = True if driver.get_phone_number() == message.sender.id else False
                     body = {'chat':chatId,'message':'','type':False,'caption':False,'sendBy':sendByMy}
