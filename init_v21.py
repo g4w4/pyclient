@@ -207,8 +207,9 @@ def getOldMessages():
 
                     chats[chatId].append(body)
             else:
-                outGroup = Thread(target=exitGroup,args=(chat.get('id'),))
-                outGroup.start()
+                print("Grupo")
+                #outGroup = Thread(target=exitGroup,args=(chat.get('id'),))
+                #outGroup.start()
         socketIO.emit('oldMessages',chats)
     except Exception as e:
         write_log('Socket-Error',traceback.format_exc())
