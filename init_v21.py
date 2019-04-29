@@ -10,6 +10,12 @@ import shutil
 from uuid import uuid4
 from threading import Thread
 
+################################################################
+#       AFECTACIÓN EN OBTENER TODOS LOS CHAT SE OPTA           #
+#       POR DESACTIVARLA HASTA QUE FUNCIONE NUEVAMENTE         #
+#       FECHA DE DETECCION 2019-04-29                          #
+################################################################
+
 ##### Setting for start ######
 profiledir=os.path.join(".","firefox_cache_v2")
 if not os.path.exists(profiledir): os.makedirs(profiledir)
@@ -222,7 +228,7 @@ def rememberSession():
             _wsp['accountDown'] = False
             socketIO.emit('change',_wsp)
 
-            # Send messages old #
+            # Send messages old # 
             #oldMessges = Thread(target=getOldMessages)
             #oldMessges.start()
 
