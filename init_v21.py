@@ -125,8 +125,8 @@ def on_waitLogin(*args):
             loop.start()
 
             # Send all messages unread #
-            oldMessges = Thread(target=getOldMessages)
-            oldMessges.start()
+            #oldMessges = Thread(target=getOldMessages)
+            #oldMessges.start()
 
             # Suscribe to observable #
             driver.subscribe_new_messages(NewMessageObserver())
