@@ -180,24 +180,27 @@ def getOldMessages():
                     chatId = message._js_obj.get('chat').get('id').get('_serialized')
                     sendByMy = True if driver.get_phone_number() == message.sender.id else False
                     body = {'chat':chatId,'message':'','type':False,'caption':False,'sendBy':sendByMy}
-                    if message.type == 'image':
-                        body['message'] = str(message.save_media(pathSource,True))
-                        body['type'] = 'image'
-                        body['caption'] = message.caption
-                    elif message.type == 'video':
-                        body['message'] = str(message.save_media(pathSource,True))
-                        body['type'] = 'video'
-                        body['caption'] = message.caption
-                    elif message.type == 'document':
-                        body['message'] = str(message.save_media(pathSource,True))
-                        body['type'] = 'file'
-                        body['caption'] = message.caption
-                    elif message.type == 'audio' or message.type == 'ptt':
-                        content =  str(message.save_media(pathSource,True))
-                        os.rename(content, content+'.ogg')
-                        body['message'] = content
-                        body['type'] = 'ogg'
-                    elif message.type == 'chat':
+                    #### Se desactiva la opción de recuperar mensajes de media 
+                    #### para evitar sobre carga al inicio de sesion
+                    # if message.type == 'image':
+                    #     body['message'] = str(message.save_media(pathSource,True))
+                    #     body['type'] = 'image'
+                    #     body['caption'] = message.caption
+                    # elif message.type == 'video':
+                    #     body['message'] = str(message.save_media(pathSource,True))
+                    #     body['type'] = 'video'
+                    #     body['caption'] = message.caption
+                    # elif message.type == 'document':
+                    #     body['message'] = str(message.save_media(pathSource,True))
+                    #     body['type'] = 'file'
+                    #     body['caption'] = message.caption
+                    # elif message.type == 'audio' or message.type == 'ptt':
+                    #     content =  str(message.save_media(pathSource,True))
+                    #     os.rename(content, content+'.ogg')
+                    #     body['message'] = content
+                    #     body['type'] = 'ogg'
+                    # el
+                    if message.type == 'chat':
                         body['message'] = message.content
                     else :
                         body['message'] = 'No soportado'
