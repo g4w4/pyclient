@@ -173,6 +173,7 @@ def getOldMessages():
         chats = {}
         write_log('Socket-Info','Get oldMessage')
         for chat in driver.get_chats_whit_messages():
+            print("CHAT NUEVO")
             if chat.get('isGroup') != True:
                 driver.chat_load_earlier_messages(chat.get('id'))
                 chats[str(chat.get('id'))] = []
