@@ -41,8 +41,8 @@ def on_welcome(*args):
             socketIO.emit('change',_wsp)
 
             # Send messages old #
-            oldMessges = Thread(target=getOldMessages)
-            oldMessges.start()
+            #oldMessges = Thread(target=getOldMessages)
+            #oldMessges.start()
         else:
 
             # Send inital data #
@@ -223,8 +223,8 @@ def rememberSession():
             socketIO.emit('change',_wsp)
 
             # Send messages old #
-            oldMessges = Thread(target=getOldMessages)
-            oldMessges.start()
+            #oldMessges = Thread(target=getOldMessages)
+            #oldMessges.start()
 
             # Send the status of account in whatsApp # 
             write_log('Socket-Info','Init event loop')
