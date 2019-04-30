@@ -10,12 +10,6 @@ import shutil
 from uuid import uuid4
 from threading import Thread
 
-################################################################
-#       AFECTACIÓN EN OBTENER TODOS LOS CHAT SE OPTA           #
-#       POR DESACTIVARLA HASTA QUE FUNCIONE NUEVAMENTE         #
-#       FECHA DE DETECCION 2019-04-29                          #
-################################################################
-
 ##### Setting for start ######
 profiledir=os.path.join(".","firefox_cache_v2")
 if not os.path.exists(profiledir): os.makedirs(profiledir)
@@ -175,47 +169,53 @@ def getOldMessages():
         for chat in driver.get_chats_whit_messages():
             print("CHAT NUEVO")
             if chat.get('isGroup') != True:
-                print("Es normal")
+
+                ############################################
+                #### SE RETIRARA DEL CODIGO ESTA LINEA, ####
+                #### TRABA LA EJECUCIÓN DEL PROGRAMA    ####
+                #### GAMA 2019-04-30                    ####
+                ############################################
                 #driver.chat_load_earlier_messages(chat.get('id'))
+
                 chats[str(chat.get('id'))] = []
-                print("VA por mensages")
                 _messages = driver.get_all_messages_in_chat(chat.get('id'),True)
-                print("SALIO ESTO")
-                print(_messages)
                 for message in _messages:
                     chatId = message._js_obj.get('chat').get('id').get('_serialized')
                     sendByMy = True if driver.get_phone_number() == message.sender.id else False
                     body = {'chat':chatId,'message':'','type':False,'caption':False,'sendBy':sendByMy}
-                    #### Se desactiva la opción de recuperar mensajes de media 
-                    #### para evitar sobre carga al inicio de sesion
-                    # if message.type == 'image':
-                    #     body['message'] = str(message.save_media(pathSource,True))
-                    #     body['type'] = 'image'
-                    #     body['caption'] = message.caption
-                    # elif message.type == 'video':
-                    #     body['message'] = str(message.save_media(pathSource,True))
-                    #     body['type'] = 'video'
-                    #     body['caption'] = message.caption
-                    # elif message.type == 'document':
-                    #     body['message'] = str(message.save_media(pathSource,True))
-                    #     body['type'] = 'file'
-                    #     body['caption'] = message.caption
-                    # elif message.type == 'audio' or message.type == 'ptt':
-                    #     content =  str(message.save_media(pathSource,True))
-                    #     os.rename(content, content+'.ogg')
-                    #     body['message'] = content
-                    #     body['type'] = 'ogg'
-                    # el
-                    if message.type == 'chat':
+                    if message.type == 'image':
+                        body['message'] = str(message.save_media(pathSource,True))
+                        body['type'] = 'image'
+                        body['caption'] = message.caption
+                    elif message.type == 'video':
+                        body['message'] = str(message.save_media(pathSource,True))
+                        body['type'] = 'video'
+                        body['caption'] = message.caption
+                    elif message.type == 'document':
+                        body['message'] = str(message.save_media(pathSource,True))
+                        body['type'] = 'file'
+                        body['caption'] = message.caption
+                    elif message.type == 'audio' or message.type == 'ptt':
+                        content =  str(message.save_media(pathSource,True))
+                        os.rename(content, content+'.ogg')
+                        body['message'] = content
+                        body['type'] = 'ogg'
+                    elif message.type == 'chat':
                         body['message'] = message.content
                     else :
                         body['message'] = 'No soportado'
 
                     chats[chatId].append(body)
             else:
-                print("Grupo")
+                write_log('Socket-Info','Message of group')
+                ##############################################
+                #### SE RETIRARA DEL CODIGO ESTA FUNCION, ####
+                #### TRABA LA EJECUCIÓN DEL PROGRAMA      ####
+                #### GAMA 2019-04-30                      ####
+                ##############################################
                 #outGroup = Thread(target=exitGroup,args=(chat.get('id'),))
                 #outGroup.start()
+
         socketIO.emit('oldMessages',chats)
     except Exception as e:
         write_log('Socket-Error',traceback.format_exc())
