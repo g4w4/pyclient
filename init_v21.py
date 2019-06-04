@@ -176,36 +176,36 @@ def getOldMessages():
                 #### GAMA 2019-04-30                    ####
                 ############################################
                 #driver.chat_load_earlier_messages(chat.get('id'))
+                if chat.get('id') not in "5215566694159@c.us":
+                    chats[str(chat.get('id'))] = []
+                    _messages = driver.get_all_messages_in_chat(chat.get('id'),True)
+                    for message in _messages:
+                        chatId = message._js_obj.get('chat').get('id').get('_serialized')
+                        sendByMy = True if driver.get_phone_number() == message.sender.id else False
+                        body = {'chat':chatId,'message':'','type':False,'caption':False,'sendBy':sendByMy}
+                        if message.type == 'image':
+                            body['message'] = str(message.save_media(pathSource,True))
+                            body['type'] = 'image'
+                            body['caption'] = message.caption
+                        elif message.type == 'video':
+                            body['message'] = str(message.save_media(pathSource,True))
+                            body['type'] = 'video'
+                            body['caption'] = message.caption
+                        elif message.type == 'document':
+                            body['message'] = str(message.save_media(pathSource,True))
+                            body['type'] = 'file'
+                            body['caption'] = message.caption
+                        elif message.type == 'audio' or message.type == 'ptt':
+                            content =  str(message.save_media(pathSource,True))
+                            os.rename(content, content+'.ogg')
+                            body['message'] = content
+                            body['type'] = 'ogg'
+                        elif message.type == 'chat':
+                            body['message'] = message.content
+                        else :
+                            body['message'] = 'No soportado'
 
-                chats[str(chat.get('id'))] = []
-                _messages = driver.get_all_messages_in_chat(chat.get('id'),True)
-                for message in _messages:
-                    chatId = message._js_obj.get('chat').get('id').get('_serialized')
-                    sendByMy = True if driver.get_phone_number() == message.sender.id else False
-                    body = {'chat':chatId,'message':'','type':False,'caption':False,'sendBy':sendByMy}
-                    if message.type == 'image':
-                        body['message'] = str(message.save_media(pathSource,True))
-                        body['type'] = 'image'
-                        body['caption'] = message.caption
-                    elif message.type == 'video':
-                        body['message'] = str(message.save_media(pathSource,True))
-                        body['type'] = 'video'
-                        body['caption'] = message.caption
-                    elif message.type == 'document':
-                        body['message'] = str(message.save_media(pathSource,True))
-                        body['type'] = 'file'
-                        body['caption'] = message.caption
-                    elif message.type == 'audio' or message.type == 'ptt':
-                        content =  str(message.save_media(pathSource,True))
-                        os.rename(content, content+'.ogg')
-                        body['message'] = content
-                        body['type'] = 'ogg'
-                    elif message.type == 'chat':
-                        body['message'] = message.content
-                    else :
-                        body['message'] = 'No soportado'
-
-                    chats[chatId].append(body)
+                        chats[chatId].append(body)
             else:
                 write_log('Socket-Info','Message of group')
                 ##############################################
@@ -385,26 +385,27 @@ def screen(id):
 class NewMessageObserver:
     def on_message_received(self, new_messages):
         for message in new_messages:
-            if message.type == 'chat':
-                write_log('Socket-Info',"New message '{}' received from number {}".format(message.type, message.sender.id))
-                socketIO.emit('newMessage',{'chat':message.sender.id,'message':message.content})
-            else:
-                write_log('Socket-Info',"New message of type '{}' received from number {}".format(message.type, message.sender.id))
-                if message.type == 'image':
-                    content =  str(message.save_media(pathSource,True))
-                    socketIO.emit('newMessage',{'chat':message.sender.id,'message':content,'type':'image','caption':message.caption})
-                elif message.type == 'video':
-                    content =  str(message.save_media(pathSource,True))
-                    socketIO.emit('newMessage',{'chat':message.sender.id,'message':content,'type':'video','caption':message.caption})
-                elif message.type == 'document':
-                    content =  str(message.save_media(pathSource,True))
-                    socketIO.emit('newMessage',{'chat':message.sender.id,'message':content,'type':'file','caption':message.caption})
-                elif message.type == 'audio' or message.type == 'ptt':
-                    content =  str(message.save_media(pathSource,True))
-                    os.rename(content, content+'.ogg')
-                    socketIO.emit('newMessage',{'chat':message.sender.id,'message':content+'.ogg','type':'ogg','caption':message.caption})
+            if message.sender.id not in "5215566694159@c.us":
+                if message.type == 'chat':
+                    write_log('Socket-Info',"New message '{}' received from number {}".format(message.type, message.sender.id))
+                    socketIO.emit('newMessage',{'chat':message.sender.id,'message':message.content})
                 else:
-                    socketIO.emit('newMessage',{'chat':message.sender.id,'message':'Contenido No soportado'})
+                    write_log('Socket-Info',"New message of type '{}' received from number {}".format(message.type, message.sender.id))
+                    if message.type == 'image':
+                        content =  str(message.save_media(pathSource,True))
+                        socketIO.emit('newMessage',{'chat':message.sender.id,'message':content,'type':'image','caption':message.caption})
+                    elif message.type == 'video':
+                        content =  str(message.save_media(pathSource,True))
+                        socketIO.emit('newMessage',{'chat':message.sender.id,'message':content,'type':'video','caption':message.caption})
+                    elif message.type == 'document':
+                        content =  str(message.save_media(pathSource,True))
+                        socketIO.emit('newMessage',{'chat':message.sender.id,'message':content,'type':'file','caption':message.caption})
+                    elif message.type == 'audio' or message.type == 'ptt':
+                        content =  str(message.save_media(pathSource,True))
+                        os.rename(content, content+'.ogg')
+                        socketIO.emit('newMessage',{'chat':message.sender.id,'message':content+'.ogg','type':'ogg','caption':message.caption})
+                    else:
+                        socketIO.emit('newMessage',{'chat':message.sender.id,'message':'Contenido No soportado'})
 
 
 ##### SOCKET LISSENER #####
