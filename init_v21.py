@@ -168,6 +168,8 @@ def getOldMessages():
         write_log('Socket-Info','Get oldMessage')
         for chat in driver.get_chats_whit_messages():
             print("CHAT NUEVO")
+            print(chat.get('id'))
+            print("5215566694159@c.us")
             if chat.get('isGroup') != True:
 
                 ############################################
